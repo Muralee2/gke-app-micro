@@ -17,6 +17,12 @@ variable "gcs_bucket_name" {
   type        = string
 }
 
+variable "cluster_name" {
+  description = "Name of the GKE cluster"
+  type        = string
+  default     = "secure-gke-cluster" # or remove default if you want to pass it manually
+}
+
 
 variable "firewall_rules" {
   description = "Map of firewall rules"
@@ -31,6 +37,7 @@ variable "firewall_rules" {
     destination_ranges = list(string)
   }))
 }
+
 
 
 
