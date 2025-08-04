@@ -53,10 +53,7 @@ jobs:
          -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
          -var="region=${{ secrets.GCP_REGION }}" \
          -var="zone=${{ secrets.GCP_ZONE }}" \
-         -var="gcs_bucket_name=${{ secrets.GCS_BUCKET_NAME }}"
-
-
-
+  
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         working-directory: terraform
