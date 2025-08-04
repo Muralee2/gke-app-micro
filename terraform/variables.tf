@@ -6,6 +6,18 @@ variable "region" {
   type = string
 }
 
+variable "zone" {
+  description = "GCP Zone"
+  type        = string
+  default     = "us-central1-a" # or your preferred zone
+}
+
+variable "gcs_bucket_name" {
+  description = "GCS Bucket Name for remote Terraform state"
+  type        = string
+}
+
+
 variable "firewall_rules" {
   description = "Map of firewall rules"
   type = map(object({
@@ -19,5 +31,6 @@ variable "firewall_rules" {
     destination_ranges = list(string)
   }))
 }
+
 
 
