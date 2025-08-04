@@ -31,8 +31,13 @@ data "external" "firewall_rules" {
   }
 }
 
+# 🔧 Decode the stringified firewall rules JSON into a local map
+locals {
+  firewall_rules = jsondecode(data.external.firewall_rules.result.rules)
+}
+
 resource "google_compute_firewall" "gke_firewall" {
-  for_each = data.external.firewall_rules.result.rules
+  for_each = local.firewall_rules
 
   name    = each.value.name
   network = google_compute_network.vpc.name
@@ -42,9 +47,9 @@ resource "google_compute_firewall" "gke_firewall" {
     ports    = each.value.ports
   }
 
-  source_tags      = each.value.source_tags
-  target_tags      = each.value.target_tags
-  direction        = each.value.direction
-  source_ranges    = each.value.source_ranges
+  source_tags        = each.value.source_tags
+  target_tags        = each.value.target_tags
+  direction          = each.value.direction
+  source_ranges      = each.value.source_ranges
   destination_ranges = each.value.destination_ranges
 }
