@@ -22,7 +22,7 @@ resource "google_project_service" "services" {
   service = each.value
 }
 
-# ✅ VPC resource removed — assumed it's in vpc.tf
+# ❌ Removed VPC block here — assumed to be in vpc.tf
 
 resource "google_compute_firewall" "gke_firewall" {
   for_each = var.firewall_rules
@@ -39,4 +39,5 @@ resource "google_compute_firewall" "gke_firewall" {
   target_tags        = each.value.target_tags
   direction          = each.value.direction
   source_ranges      = each.value.source_ranges
-
+  destination_ranges = each.value.destination_ranges
+}
