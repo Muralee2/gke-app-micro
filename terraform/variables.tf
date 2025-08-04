@@ -1,9 +1,20 @@
-variable "zone" {
-  description = "GCP zone to deploy resources"
-  type        = string
+variable "project_id" {
+  type = string
 }
 
-variable "gcs_bucket_name" {
-  description = "The name of the GCS bucket used for backend state"
-  type        = string
+variable "region" {
+  type = string
+}
+
+variable "firewall_rules" {
+  type = map(object({
+    name               = string
+    direction          = string
+    source_ranges      = list(string)
+    target_tags        = list(string)
+    protocol           = string
+    ports              = list(string)
+    source_tags        = list(string)
+    destination_ranges = list(string)
+  }))
 }
