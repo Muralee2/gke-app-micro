@@ -26,7 +26,7 @@ resource "google_container_cluster" "primary" {
   }
 
   depends_on = [
-    google_project_service.services,
+    google_project_service.services
   ]
 }
 
@@ -37,7 +37,7 @@ resource "google_container_node_pool" "primary_nodes" {
   node_count = 1
 
   node_config {
-    machine_type = "e2-micro" # Free tier eligible
+    machine_type = "e2-micro"
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
