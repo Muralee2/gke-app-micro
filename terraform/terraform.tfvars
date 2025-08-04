@@ -1,5 +1,7 @@
 project_id = "modern-girder-463514-t1"
 region     = "us-central1"
+gcs_bucket_name = "ghambeera1"
+
 
 firewall_rules = {
   allow-egress-to-master = {
