@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "modern-girder-463514-t1",
+  "private_key_id": "a423b0ab4ba679d83c0fbdba71844817029f8832",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCeDBaMktMqWKOz\nHmRcV3xbfmxD5GWbo7oGRV3tR8Co0ed4wuwC00XDoQhuZD1iZjPvT3+UNgOoLhcs\njXMR11J2duyDXurIkAAWF8Rg8xuATulcb+bt5KTkPgNOVgyTp0rM7/kP4wEA50dt\nwrY2NbUS74jsH2VmAEu7rlcCjP6MVOiWodyqf4cw2wRhlkUSLGbTmyrw2S4+H5g9\nD8jkA0cJioVl2YYd5wUSNTlvyKEfPvifAG6tnNDnKHoNzfG6iVUXiiRrpZ9IPyGf\nD+uGCX80ntdiUf0aeMzbuycH4WUab0uAfLp9Z9tQwMdJk2p+yOeNkT3fZhge113w\nF4xbpMfNAgMBAAECggEACUeplvPzuQe5hvB+JpY5dlAq8GVBBRLnlEDZm2+BiQ1t\neLUDRsWGfLk1cEaWUciGp016RCbUGfl+LAQbMVKSDuQmji580oLICoQMkxUQiee4\nQpCh1S6TcwEO0HhI0UOlpqO23VSwJVAvLMCd0nreqLUOtlnqlNhoGftKNHC4bTS4\nXwZ82tVW16wAa7OKKKbFXMouvPcK7WL4rV37bM13pWrNQ7p8urvHrhhyVnv087gQ\ndZ3x5Ds9sEQi5D7JAj3kyIcY+85U+Jx7jqqOz1k1zR7V6vx/qfG/SSaDvXZiraVQ\n8dp118TGBni/isosSz0avHXdkRU9Kc5+8ORgIX9ROQKBgQDdk5rSs2/mh2AUJIY0\n3blP3npLZ1d+aCRsAXH7UuOmDU7NDTcfIlNLaZv3raoZfoeJjyANgJafJuono36j\naNlQZccJUq+Vjgm0M3kt5e2eVVxBOodJLn3y9lvcLLjnKGrMRwuam7xHPbdIqJwr\nviGqxpC1tkcZVZmst3JgqM7BqQKBgQC2mdYLZANhaqloGyMFiAGSeKScVd5o8250\nIZUznc3VDNAeKchrZF3wS9uPhXuZaAu9Kc5Zrg4LVNNgHGri8X2zSw75IYh6WYKB\nAgw6c8Xqge+yhjWwl/2KkHKZE4f4clCFEUQg3qbzrz1zdfsXsjqzbccOfg4kYEu1\nFlc7tOmzhQKBgEjo8hAVBWRI9X+LSTIKJ5k1bu5y8eJhaGK10wjNDKWuSVjF2XaA\nOAJfnPfSCF/dN8I2+2gWAPobtv8WGGyy6pc+9lCGCcrfcyf9rAlDWH46PmIkXTHi\nf4U8NZvsh2dg8EuJsTLNvhV/JFlfSgxGwxNLxYBVm22lsiyYLKXLxkUJAoGAOM2E\nM0jqcEyA5HzEmTzk2E6lTmi75kQL0R59TnBBjowM1cVDrnyraEwAwhXRDDi8phyy\nL12gys+ZbaWJbo2W/8ZSoxdWYFEl8sHTUf+fysKe8Rck7olpeshSjeHwg030VGC5\no8v/fYC/CgLimE1+S0DUEmMOPSyjgHKxskYmCQ0CgYBJSZBi75u/NKTtROMN0Z4o\nA8bL+qygeK2xz45FIDvjHVvZuI6TdypmRW9OcE+NHm0eu0tNnm+uvpqaCd48aJjd\nKXOukW+F+eN7jBl9WOBLmPqqPEKvbFZJzuvJIrOst+OFQBJ/6hb437OBWW/aFabA\nZVBKujanZZMtd4gOX1CQuA==\n-----END PRIVATE KEY-----\n",
+  "client_email": "terraform@modern-girder-463514-t1.iam.gserviceaccount.com",
+  "client_id": "117421588205309118047",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/terraform%40modern-girder-463514-t1.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
