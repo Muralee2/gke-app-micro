@@ -1,0 +1,52 @@
+name: Terraform GKE Destroy
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  terraform-destroy:
+    name: Terraform Destroy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.7.5
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - name: Set up gcloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Create backend.tf dynamically (GCS remote state)
+        working-directory: terraform
+        run: |
+          echo 'terraform {' > backend.tf
+          echo '  backend "gcs" {' >> backend.tf
+          echo '    bucket = "${{ secrets.GCS_BUCKET_NAME }}"' >> backend.tf
+          echo '    prefix = "terraform/state"' >> backend.tf
+          echo '  }' >> backend.tf
+          echo '}' >> backend.tf
+
+      - name: Terraform Init
+        working-directory: terraform
+        run: terraform init -backend-config="bucket=${{ secrets.GCS_BUCKET_NAME }}" -backend-config="prefix=terraform/state"
+
+      - name: Terraform Destroy
+        working-directory: terraform
+        run: |
+          terraform destroy -auto-approve \
+            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -var="region=${{ secrets.GCP_REGION }}" \
+            -var="zone=${{ secrets.GCP_ZONE }}"
