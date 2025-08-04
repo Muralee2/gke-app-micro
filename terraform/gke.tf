@@ -28,9 +28,13 @@ resource "google_container_node_pool" "primary_nodes" {
   node_count = 1
 
   node_config {
+    machine_type = "e2-medium"       # Free tier-compatible
+    disk_type    = "pd-standard"     # Avoid pd-ssd to prevent quota errors
+    disk_size_gb = 20                # 20 GB is within free tier/quota
     service_account = "gke-node-sa@${var.project_id}.iam.gserviceaccount.com"
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
   }
 }
+
