@@ -12,11 +12,6 @@ variable "zone" {
   default     = "us-central1-a" # or your preferred zone
 }
 
-variable "gcs_bucket_name" {
-  description = "GCS Bucket Name for remote Terraform state"
-  type        = string
-}
-
 variable "cluster_name" {
   description = "Name of the GKE cluster"
   type        = string
@@ -37,6 +32,7 @@ variable "firewall_rules" {
     destination_ranges = list(string)
   }))
 }
+
 
 
 
