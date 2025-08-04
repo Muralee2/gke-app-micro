@@ -1,5 +1,5 @@
 project_id = "modern-girder-463514-t1"
-region     = "aisa-east2"
+region     = "asia-east2"
 cluster_name = "gke-cluster"
 
 
