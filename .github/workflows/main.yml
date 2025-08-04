@@ -1,54 +1,133 @@
-name: Terraform Deploy to GCP
+name: Deploy to GKE
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [ main ]
 
-permissions:
-  contents: read
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GKE_CLUSTER: secure-microservice
+  GKE_REGION: us-central1
+  DNS_NAME: microservice.example.com
+  TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
+  GCP_REGION: us-central1
+  GCP_ZONE: us-central1-a
 
 jobs:
-  terraform:
+  setup-and-deploy:
     runs-on: ubuntu-latest
 
-    env:
-      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-      GCP_REGION: ${{ secrets.GCP_REGION }}
-      GCP_ZONE: ${{ secrets.GCP_ZONE }}
-      GCS_BUCKET_NAME: ${{ secrets.GCS_BUCKET_NAME }}
-
     steps:
-      - name: ⬇️ Checkout Code
-        uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v3
 
-      - name: 🔧 Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.6.6
+    # Setup GCP authentication
+    - name: Authenticate to Google Cloud
+      id: 'auth'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
-      - name: 🔐 Authenticate to Google Cloud (SA Key)
-        run: |
-          echo "${{ secrets.GCP_CREDENTIALS }}" > $HOME/gcp-key.json
-          gcloud auth activate-service-account --key-file=$HOME/gcp-key.json
-          gcloud config set project $GCP_PROJECT_ID
-          gcloud config set compute/region $GCP_REGION
-          gcloud config set compute/zone $GCP_ZONE
+    - name: Set up gcloud
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        version: 'latest'
+        project_id: ${{ env.PROJECT_ID }}
 
-      - name: ⚙️ Terraform Init
-        run: |
-          terraform init \
-            -backend-config="bucket=${GCS_BUCKET_NAME}" \
-            -backend-config="prefix=gke-secure-app"
-        working-directory: terraform/
+    - name: Configure Docker
+      run: |-
+        gcloud auth configure-docker
 
-      - name: 🚀 Terraform Apply
-        run: |
-          terraform apply -auto-approve \
-            -var="project_id=${GCP_PROJECT_ID}" \
-            -var="region=${GCP_REGION}" \
-            -var="zone=${GCP_ZONE}" \
-            -var="network_name=secure-vpc" \
-            -var="gke_node_sa_email=${{ secrets.TF_VAR_GKE_NODE_SA_EMAIL }}"
-        working-directory: terraform/
+    # Create GCS bucket for Terraform state if it doesn't exist
+    - name: Create GCS bucket for Terraform state
+      run: |-
+        if ! gsutil ls gs://${{ env.TF_STATE_BUCKET }} &>/dev/null; then
+          gsutil mb -p ${{ env.PROJECT_ID }} -l ${{ env.GCP_REGION }} gs://${{ env.TF_STATE_BUCKET }}
+          gsutil versioning set on gs://${{ env.TF_STATE_BUCKET }}
+        fi
+
+    # Terraform setup and deployment
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+
+    - name: Terraform Init
+      run: |-
+        terraform init \
+          -backend-config="bucket=${{ env.TF_STATE_BUCKET }}" \
+          -backend-config="prefix=terraform/state"
+      working-directory: ./terraform
+
+    - name: Terraform Plan
+      run: terraform plan -var="project_id=$PROJECT_ID" -var="dns_name=$DNS_NAME"
+      working-directory: ./terraform
+
+    - name: Terraform Apply
+      run: terraform apply -var="project_id=$PROJECT_ID" -var="dns_name=$DNS_NAME" -auto-approve
+      working-directory: ./terraform
+
+    # Get GKE credentials
+    - name: Get GKE credentials
+      run: |-
+        gcloud container clusters get-credentials $GKE_CLUSTER --region $GKE_REGION
+
+    - name: Install Helm
+      uses: azure/setup-helm@v3
+      with:
+        version: 'v3.10.0'
+
+    # Helm deployment
+    - name: Deploy Helm chart
+      run: |-
+        helm upgrade --install microservice ./helm/microservice \
+          --set ingress.hosts[0].host=$DNS_NAME \
+          --wait \
+          --timeout=300s
+
+    # Verification steps
+    - name: Check Helm release status
+      run: |-
+        helm status microservice
+
+    - name: Check Kubernetes resources
+      run: |-
+        kubectl get deployment,service,ingress -l app=microservice
+
+    - name: Check pod health
+      run: |-
+        kubectl get pods -l app=microservice
+
+    - name: Verify service accessibility
+      run: |-
+        # Get the load balancer IP (might take a few minutes to provision)
+        echo "Waiting for load balancer IP..."
+        sleep 30
+        LB_IP=$(kubectl get ingress microservice-ingress -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+        echo "Load balancer IP: $LB_IP"
+        
+        # Test connectivity (using curl)
+        if [ -z "$LB_IP" ]; then
+          echo "ERROR: Load balancer IP not found"
+          exit 1
+        fi
+        
+        # Update local hosts file for testing
+        echo "$LB_IP $DNS_NAME" | sudo tee -a /etc/hosts
+        
+        # Test HTTP endpoint
+        if curl -s --head http://$DNS_NAME | grep "200 OK"; then
+          echo "SUCCESS: Service is accessible"
+        else
+          echo "ERROR: Service not accessible"
+          exit 1
+        fi
+
+    - name: Get deployment status
+      run: |-
+        kubectl rollout status deployment/microservice-deployment
+        kubectl describe deployment microservice-deployment
+
+    - name: Cleanup test DNS entry
+      if: always()
+      run: |-
+        # Remove test DNS entry from hosts file
+        sudo sed -i "/$DNS_NAME/d" /etc/hosts
