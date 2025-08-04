@@ -42,7 +42,7 @@ def main():
     # Convert list to dict with rule name as key
     rules_dict = {rule["name"]: rule for rule in rules_list}
 
-    result = {"rules": rules_dict}
+    result = {"rules": json.dumps({r["name"]: r for r in rules})}
     print(json.dumps(result))
 
 if __name__ == "__main__":
