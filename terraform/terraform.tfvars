@@ -1,5 +1,5 @@
-project_id = "your-project-id"
-region     = "your-region"
+project_id = "modern-girder-463514-t1"
+region     = "us-central1"
 
 firewall_rules = {
   allow-egress-to-master = {
