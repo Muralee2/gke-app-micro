@@ -6,11 +6,11 @@ def main():
     project_id = input_data['project_id']
     network_name = input_data['network_name']
 
-    rules = [
+    rules_list = [
         {
             "name": "allow-egress-to-master",
             "direction": "EGRESS",
-            "source_ranges": ["172.16.0.0/28"], # GKE master CIDR
+            "source_ranges": ["172.16.0.0/28"],
             "target_tags": ["gke-node"],
             "protocol": "tcp",
             "ports": ["443", "10250"],
@@ -30,7 +30,7 @@ def main():
         {
             "name": "allow-inter-pod",
             "direction": "INGRESS",
-            "source_ranges": ["10.0.0.0/24"], # Subnet CIDR
+            "source_ranges": ["10.0.0.0/24"],
             "target_tags": ["gke-node"],
             "protocol": "tcp",
             "ports": ["0-65535"],
@@ -39,7 +39,10 @@ def main():
         }
     ]
 
-    result = {"rules": rules}
+    # Convert list to dict with rule name as key
+    rules_dict = {rule["name"]: rule for rule in rules_list}
+
+    result = {"rules": rules_dict}
     print(json.dumps(result))
 
 if __name__ == "__main__":
