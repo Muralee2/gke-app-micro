@@ -32,7 +32,7 @@ jobs:
       uses: google-github-actions/setup-gcloud@v1
       with:
         version: 'latest'
-        project_id: ${{ env.PROJECT_ID }}
+        project_id: ${{ env.GCP_PROJECT_ID }}
 
     - name: Configure Docker
       run: |-
@@ -41,8 +41,8 @@ jobs:
     # Create GCS bucket for Terraform state if it doesn't exist
     - name: Create GCS bucket for Terraform state
       run: |-
-        if ! gsutil ls gs://${{ env.TF_STATE_BUCKET }} &>/dev/null; then
-          gsutil mb -p ${{ env.PROJECT_ID }} -l ${{ env.GCP_REGION }} gs://${{ env.TF_STATE_BUCKET }}
+        if ! gsutil ls gs://${{ env.GCS_BUCKET_NAME }} &>/dev/null; then
+          gsutil mb -p ${{ env.GCP_PROJECT_ID }} -l ${{ env.GCP_REGION }} gs://${{ env.GCS_BUCKET_NAME }}
           gsutil versioning set on gs://${{ env.TF_STATE_BUCKET }}
         fi
 
@@ -53,16 +53,16 @@ jobs:
     - name: Terraform Init
       run: |-
         terraform init \
-          -backend-config="bucket=${{ env.TF_STATE_BUCKET }}" \
+          -backend-config="bucket=${{ env.GCS_BUCKET_NAME }}" \
           -backend-config="prefix=terraform/state"
       working-directory: ./terraform
 
     - name: Terraform Plan
-      run: terraform plan -var="project_id=$PROJECT_ID" -var="dns_name=$DNS_NAME"
+      run: terraform plan -var="project_id=$GCP_PROJECT_ID" -var="dns_name=$DNS_NAME"
       working-directory: ./terraform
 
     - name: Terraform Apply
-      run: terraform apply -var="project_id=$PROJECT_ID" -var="dns_name=$DNS_NAME" -auto-approve
+      run: terraform apply -var="project_id=$GCP_PROJECT_ID" -var="dns_name=$DNS_NAME" -auto-approve
       working-directory: ./terraform
 
     # Get GKE credentials
