@@ -37,11 +37,12 @@ jobs:
       - name: Install Google Cloud SDK manually (for gke-gcloud-auth-plugin)
         run: |
           sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates gnupg curl
-          curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo tee /usr/share/keyrings/cloud.google.gpg > /dev/null
+          curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
+          gpg --dearmor | sudo tee /usr/share/keyrings/cloud.google.gpg > /dev/null
           echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | \
           sudo tee /etc/apt/sources.list.d/google-cloud-sdk.list
-          sudo apt-get update && sudo apt-get install google-cloud-sdk -y
-
+          sudo apt-get update && sudo apt-get install -y google-cloud-sdk
+     
       # ✅ Get GKE credentials
       - name: Get GKE credentials
         run: |
