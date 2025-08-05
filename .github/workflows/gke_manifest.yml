@@ -20,13 +20,20 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # ✅ Authenticate to Google Cloud
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      # ✅ Set up gcloud with project ID
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
 
+      # ✅ Get GKE kubeconfig
       - name: Get GKE credentials
         run: |
           gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER_NAME }} \
@@ -36,11 +43,13 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v3
 
+      # ✅ Deploy Helm chart
       - name: Deploy via Helm
         run: |
           helm upgrade --install $HELM_RELEASE_NAME $HELM_CHART_DIR \
             --namespace default --create-namespace
 
+      # ✅ Print Ingress IP
       - name: Get Ingress IP
         run: |
           echo "Waiting for Ingress IP..."
