@@ -53,6 +53,14 @@ jobs:
         with:
           version: 'latest'
 
+      # ✅ Install Ingress-NGINX controller (important!)
+      - name: Install Ingress-NGINX Controller
+        run: |
+          echo "Installing NGINX Ingress Controller..."
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/cloud/deploy.yaml
+          echo "Waiting for ingress controller to be ready..."
+          kubectl rollout status deployment ingress-nginx-controller -n ingress-nginx --timeout=180s
+
       # ✅ Debug Helm chart path
       - name: Debug Helm chart path
         run: |
@@ -72,12 +80,13 @@ jobs:
         run: |
           echo "Waiting for Ingress IP..."
           for i in {1..20}; do
-            IP=$(kubectl get ingress $HELM_RELEASE_NAME -n default -o jsonpath="{.status.loadBalancer.ingress[0].ip}")
+            IP=$(kubectl get ingress microservice -n default -o jsonpath="{.status.loadBalancer.ingress[0].ip}" 2>/dev/null)
             if [[ -n "$IP" ]]; then
               echo "✅ App is available at:"
               echo "http://$IP or http://$IP.nip.io"
               exit 0
             fi
+            echo "⏳ Attempt $i: Ingress IP not assigned yet..."
             sleep 10
           done
           echo "❌ Ingress IP not found after timeout."
