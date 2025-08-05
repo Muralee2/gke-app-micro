@@ -26,22 +26,23 @@ jobs:
         with:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
-      # ✅ Set up gcloud with project ID
+      # ✅ Set up gcloud with project ID and GKE plugin
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           export_default_credentials: true
 
-      # ✅ Install GKE Auth Plugin (Fixes 403 error in kubectl)
-      - name: Install Google Cloud SDK (with GKE Auth Plugin)
+      # ✅ Install Cloud SDK (with secure GPG keyring)
+      - name: Install Google Cloud SDK manually (for gke-gcloud-auth-plugin)
         run: |
-           echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-           curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-           sudo apt-get update && sudo apt-get install google-cloud-sdk
+          sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates gnupg curl
+          curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo tee /usr/share/keyrings/cloud.google.gpg > /dev/null
+          echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | \
+          sudo tee /etc/apt/sources.list.d/google-cloud-sdk.list
+          sudo apt-get update && sudo apt-get install google-cloud-sdk -y
 
-
-      # ✅ Get GKE kubeconfig using --region
+      # ✅ Get GKE credentials
       - name: Get GKE credentials
         run: |
           gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER_NAME }} \
@@ -70,4 +71,5 @@ jobs:
             fi
             sleep 10
           done
+
 
