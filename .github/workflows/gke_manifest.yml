@@ -33,11 +33,11 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           export_default_credentials: true
 
-      # ✅ Get GKE kubeconfig
+      # ✅ Get GKE kubeconfig using --region
       - name: Get GKE credentials
         run: |
           gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER_NAME }} \
-            --zone ${{ secrets.GCP_ZONE }} \
+            --region ${{ secrets.GCP_REGION }} \
             --project ${{ secrets.GCP_PROJECT_ID }}
 
       - name: Install Helm
