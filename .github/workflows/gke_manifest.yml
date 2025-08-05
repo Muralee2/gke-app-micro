@@ -14,7 +14,7 @@ jobs:
 
     env:
       HELM_RELEASE_NAME: microservice
-      HELM_CHART_DIR: /helm/microservice
+      HELM_CHART_DIR: ./helm/microservice
 
     steps:
       - name: Checkout Code
@@ -53,6 +53,14 @@ jobs:
         with:
           version: 'latest'
 
+      # ✅ Debug Helm chart path
+      - name: Debug Helm chart path
+        run: |
+          echo "🔍 Listing Helm chart files:"
+          ls -l ./helm/microservice
+          echo "📄 Chart.yaml contents:"
+          cat ./helm/microservice/Chart.yaml
+
       # ✅ Deploy Helm chart
       - name: Deploy via Helm
         run: |
@@ -74,5 +82,6 @@ jobs:
           done
           echo "❌ Ingress IP not found after timeout."
           exit 1
+
 
 
