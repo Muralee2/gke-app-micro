@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      HELM_RELEASE_NAME: microservice
+      HELM_RELEASE_NAME: microservice-ingress
       HELM_CHART_DIR: ./helm/microservice
 
     steps:
