@@ -1,5 +1,5 @@
-project_id = "modern-girder-463514-t1"
-region     = "europe-west1"
+project_id = "smooth-guru-468107-p1"
+region     = "us-central1"
 cluster_name = "gke-cluster"
 
 
