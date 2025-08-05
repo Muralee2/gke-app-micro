@@ -58,7 +58,7 @@ jobs:
         run: |
           echo "🔍 Listing Helm chart files:"
           ls -l ./helm/microservice
-          echo "📄 Chart.yaml contents:"
+          echo "📄 chart.yaml contents:"
           cat ./helm/microservice/chart.yaml
 
       # ✅ Deploy Helm chart
