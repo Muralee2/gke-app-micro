@@ -5,8 +5,7 @@ on:
   push:
     paths:
       - 'helm/**'
-      - '.github/workflows/deploy-no-dns.yaml'
-
+     
 jobs:
   deploy:
     name: Deploy Helm Chart
@@ -17,6 +16,7 @@ jobs:
       HELM_CHART_DIR: ./helm/microservice
 
     steps:
+      # ✅ Checkout code
       - name: Checkout Code
         uses: actions/checkout@v4
 
@@ -53,21 +53,42 @@ jobs:
         with:
           version: 'latest'
 
-      # ✅ Install Ingress-NGINX controller (important!)
+      # ✅ Install Ingress-NGINX Controller via Helm
       - name: Install Ingress-NGINX Controller
         run: |
-          echo "Installing NGINX Ingress Controller..."
-          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/cloud/deploy.yaml
-          echo "Waiting for ingress controller to be ready..."
-          kubectl rollout status deployment ingress-nginx-controller -n ingress-nginx --timeout=180s
+          echo "🔧 Installing Ingress-NGINX via Helm..."
+          helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+          helm repo update
+          helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+            --namespace ingress-nginx \
+            --create-namespace \
+            --set controller.publishService.enabled=true
+
+          echo "⏳ Waiting for ingress-nginx-controller pod to be ready..."
+          for i in {1..30}; do
+            READY=$(kubectl get pods -n ingress-nginx -l app.kubernetes.io/component=controller -o jsonpath='{.items[0].status.containerStatuses[0].ready}' 2>/dev/null)
+            if [ "$READY" = "true" ]; then
+              echo "✅ Ingress-NGINX controller is ready."
+              break
+            fi
+            echo "⏳ Attempt $i: Controller not ready yet..."
+            sleep 10
+          done
+
+          if [ "$READY" != "true" ]; then
+            echo "❌ Timeout waiting for Ingress-NGINX controller to be ready."
+            kubectl describe pods -n ingress-nginx
+            kubectl get events -n ingress-nginx --sort-by='.metadata.creationTimestamp'
+            exit 1
+          fi
 
       # ✅ Debug Helm chart path
       - name: Debug Helm chart path
         run: |
           echo "🔍 Listing Helm chart files:"
-          ls -l ./helm/microservice
+          ls -l $HELM_CHART_DIR
           echo "📄 Chart.yaml contents:"
-          cat ./helm/microservice/Chart.yaml
+          cat $HELM_CHART_DIR/Chart.yaml
 
       # ✅ Deploy Helm chart
       - name: Deploy via Helm
@@ -78,9 +99,9 @@ jobs:
       # ✅ Get Ingress IP
       - name: Get Ingress IP
         run: |
-          echo "Waiting for Ingress IP..."
+          echo "⏳ Waiting for Ingress IP to be assigned..."
           for i in {1..20}; do
-            IP=$(kubectl get ingress microservice -n default -o jsonpath="{.status.loadBalancer.ingress[0].ip}" 2>/dev/null)
+            IP=$(kubectl get ingress -n default -o jsonpath="{.items[0].status.loadBalancer.ingress[0].ip}" 2>/dev/null)
             if [[ -n "$IP" ]]; then
               echo "✅ App is available at:"
               echo "http://$IP or http://$IP.nip.io"
@@ -91,6 +112,7 @@ jobs:
           done
           echo "❌ Ingress IP not found after timeout."
           exit 1
+
 
 
 
