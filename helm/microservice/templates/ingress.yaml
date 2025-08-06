@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}-ingress
+  name: {{ include "microservice.fullname" . }}
   annotations:
     {{- range $key, $value := .Values.ingress.annotations }}
     {{ $key }}: {{ $value | quote }}
@@ -11,7 +11,7 @@ spec:
   ingressClassName: {{ .Values.ingress.className }}
   rules:
     {{- range .Values.ingress.hosts }}
-    - host: {{ .host }}
+    - host: {{ .host | quote }}
       http:
         paths:
           {{- range .paths }}
@@ -19,13 +19,9 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ $.Release.Name }}-service
+                name: {{ include "microservice.fullname" $ }}
                 port:
                   number: {{ $.Values.service.port }}
           {{- end }}
     {{- end }}
-  {{- if .Values.ingress.tls }}
-  tls:
-    {{- toYaml .Values.ingress.tls | nindent 4 }}
-  {{- end }}
 {{- end }}
