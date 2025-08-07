@@ -8,4 +8,10 @@ variable "pods_range_name" {}
 variable "services_range_name" {}
 
 
+variable "zone" {
+  description = "The GCP zone to deploy resources in (used in zonal resources)"
+  type        = string
+}
+
+
 
