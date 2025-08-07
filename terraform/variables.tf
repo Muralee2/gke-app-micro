@@ -18,5 +18,16 @@ variable "network_name" {
   description = "The name of the VPC network"
 }
 
+variable "pods_ip_range" {
+  type        = string
+  description = "CIDR range for the GKE Pods secondary IP range"
+}
+
+variable "services_ip_range" {
+  type        = string
+  description = "CIDR range for the GKE Services secondary IP range"
+}
+
+
 
 
