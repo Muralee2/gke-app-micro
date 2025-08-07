@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "microservice.fullname" . }}
+  name: microservice-ingress
   annotations:
     {{- range $key, $value := .Values.ingress.annotations }}
     {{ $key }}: {{ $value | quote }}
@@ -19,9 +19,10 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ include "microservice.fullname" $ }}
+                name: microservice
                 port:
-                  number: {{ $.Values.service.port }}
+                  number: 80
           {{- end }}
     {{- end }}
 {{- end }}
+
