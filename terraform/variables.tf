@@ -1,32 +1,18 @@
 variable "project_id" {}
 variable "region" {}
+variable "network_name" {}
 variable "subnet_name" {}
 variable "subnet_ip" {}
 variable "cluster_name" {}
-
-
-
-variable "zone" {
-  description = "The GCP zone to deploy resources in (used in zonal resources)"
+variable "pods_range_cidr" {
+  description = "CIDR range for GKE pods"
   type        = string
 }
 
-
-variable "network_name" {
+variable "services_range_cidr" {
+  description = "CIDR range for GKE services"
   type        = string
-  description = "The name of the VPC network"
 }
-
-variable "pods_ip_range" {
-  type        = string
-  description = "CIDR range for the GKE Pods secondary IP range"
-}
-
-variable "services_ip_range" {
-  type        = string
-  description = "CIDR range for the GKE Services secondary IP range"
-}
-
 
 
 
