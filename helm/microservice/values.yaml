@@ -16,7 +16,7 @@ ingress:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/rewrite-target: /
   hosts:
-    - host: "YOUR_IP_HERE.nip.io"
+    - host: "34.57.124.51.nip.io"
       paths:
         - path: /
           pathType: Prefix
