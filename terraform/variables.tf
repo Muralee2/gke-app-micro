@@ -3,8 +3,7 @@ variable "region" {}
 variable "subnet_name" {}
 variable "subnet_ip" {}
 variable "cluster_name" {}
-variable "pods_range_name" {}
-variable "services_range_name" {}
+
 
 
 variable "zone" {
@@ -27,6 +26,7 @@ variable "services_ip_range" {
   type        = string
   description = "CIDR range for the GKE Services secondary IP range"
 }
+
 
 
 
