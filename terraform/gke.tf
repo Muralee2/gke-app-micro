@@ -3,7 +3,8 @@ resource "google_container_cluster" "primary" {
   location = var.region
 
   network    = module.vpc.network_name
-  subnetwork = module.vpc.subnets[var.subnet_name].name
+  subnetwork = values(module.vpc.subnets)[0].name
+
 
 
   remove_default_node_pool = true
