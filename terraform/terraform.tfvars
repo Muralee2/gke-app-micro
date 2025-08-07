@@ -1,4 +1,4 @@
-project_id         = "your-project-id"
+project_id         = "smooth-guru-468107-p1"
 region             = "us-central1"
 network_name       = "gke-network"
 subnet_name        = "gke-subnet"
