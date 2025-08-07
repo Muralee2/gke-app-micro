@@ -1,11 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "microservice.fullname" . }}
+  name: microservice
 spec:
-  type: {{ .Values.service.type }}
   selector:
-    app: {{ include "microservice.name" . }}
+    app: microservice
   ports:
-    - port: {{ .Values.service.port }}
+    - protocol: TCP
+      port: {{ .Values.service.port }}
       targetPort: 80
+  type: {{ .Values.service.type }}
