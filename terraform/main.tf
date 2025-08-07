@@ -32,9 +32,13 @@ module "vpc" {
 
   subnets = [
     {
-      subnet_name   = var.subnet_name
-      subnet_ip     = var.subnet_ip
-      subnet_region = var.region
+      subnet_name           = var.subnet_name
+      subnet_ip             = var.subnet_ip
+      subnet_region         = var.region
+      subnet_secondary_ranges = {
+        "${var.pods_range_name}" = var.pods_range_cidr
+        "${var.services_range_name}" = var.services_range_cidr
+      }
     }
   ]
 }
