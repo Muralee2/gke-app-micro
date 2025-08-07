@@ -1,9 +1,8 @@
-output "cluster_name" {
-  description = "GKE Cluster Name"
-  value       = var.cluster_name
-}
-
-output "region" {
-  description = "GCP Region"
-  value       = var.region
-}
+project_id         = "your-project-id"
+region             = "us-central1"
+network_name       = "gke-network"
+subnet_name        = "gke-subnet"
+subnet_ip          = "10.0.1.0/24"
+cluster_name       = "gke-cluster"
+pods_range_name    = "gke-pods"
+services_range_name= "gke-services"
