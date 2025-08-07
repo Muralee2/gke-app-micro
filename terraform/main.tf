@@ -2,9 +2,10 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "~> 4.0"
+      version = ">= 4.0"
     }
   }
+  required_version = ">= 1.0"
 }
 
 provider "google" {
@@ -12,32 +13,28 @@ provider "google" {
   region  = var.region
 }
 
-resource "google_project_service" "services" {
+resource "google_project_service" "required" {
   for_each = toset([
     "container.googleapis.com",
     "compute.googleapis.com",
-    "dns.googleapis.com",
+    "dns.googleapis.com"
   ])
   project = var.project_id
-  service = each.value
+  service = each.key
 }
 
-# ❌ Removed VPC block here — assumed to be in vpc.tf
+module "vpc" {
+  source       = "terraform-google-modules/network/google"
+  version      = "5.1.0"
+  project_id   = var.project_id
+  network_name = var.network_name
+  routing_mode = "REGIONAL"
 
-resource "google_compute_firewall" "gke_firewall" {
-  for_each = var.firewall_rules
-
-  name    = each.value.name
-  network = google_compute_network.vpc.name
-
-  allow {
-    protocol = each.value.protocol
-    ports    = each.value.ports
-  }
-
-  source_tags        = each.value.source_tags
-  target_tags        = each.value.target_tags
-  direction          = each.value.direction
-  source_ranges      = each.value.source_ranges
-  destination_ranges = each.value.destination_ranges
+  subnets = [
+    {
+      subnet_name   = var.subnet_name
+      subnet_ip     = var.subnet_ip
+      subnet_region = var.region
+    }
+  ]
 }
